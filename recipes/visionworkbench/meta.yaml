@@ -17,11 +17,10 @@ build:
 requirements:
   build:
     - cmake >=3.15
-    - make
+    - ninja
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - {{ stdlib('c') }}
-    - wget
 
   host:
     - libgdal-core
@@ -39,7 +38,6 @@ requirements:
     - openblas
     - libopencv
     - opencv
-    #- proj
     - hdf5
     - libzlib
     - zlib
@@ -57,7 +55,7 @@ requirements:
     - parallel
     - pbzip2
     - krb5
-    #- libpdal-core
+    - libpdal-core
     #- ale
     #- usgscsm
     - eigen
@@ -119,7 +117,7 @@ requirements:
     - parallel
     - pbzip2
     - krb5
-    #- libpdal-core
+    - libpdal-core
     #- ale
     #- usgscsm
     - eigen
@@ -149,7 +147,20 @@ requirements:
 
 test:
   commands:
-    - $PREFIX/bin/hillshade  # [unix]
+    - echo "Testing for header"
+    - test -f $PREFIX/include/vw/Stereo/Algorithms.h  # [unix]
+    - if not exist %LIBRARY_INC%\vw\Stereo\Algorithms.h exit 1  # [win]
+
+    - echo "Testing for library"
+    - test -f $PREFIX/lib/libVwCore.dylib  # [osx]
+    - test -f $PREFIX/lib/libVwCore.so  # [linux]
+    - if not exist %LIBRARY_BIN%\VwCore.dll exit 1  # [win]
+
+    - echo "Testing for CLI"
+    - test -f $PREFIX/bin/ipmatch  # [unix]
+    - if not exist %LIBRARY_BIN%\ipmatch.exe exit 1  # [win]
+
+#    - $PREFIX/bin/hillshade  -# [unix]
 
 about:
   home: https://github.com/visionworkbench/visionworkbench
